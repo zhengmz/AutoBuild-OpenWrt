@@ -24,9 +24,10 @@ https://github.com/jerrykuku/luci-theme-argon.git
 https://github.com/jerrykuku/luci-app-argon-config.git
 https://github.com/kiddin9/luci-app-dnsfilter.git
 https://github.com/destan19/OpenAppFilter.git
-https://github.com/openwrt/routing.git
+https://github.com/coolsnowwolf/routing.git
 https://github.com/openwrt/telephony.git
 #"https://github.com/openwrt/packages.git openwrt-packages"
+#"https://github.com/openwrt/routing openwrt-routing"
 #"https://github.com/openwrt/luci openwrt-luci"
 )
 

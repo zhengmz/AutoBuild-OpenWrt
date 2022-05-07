@@ -146,9 +146,7 @@ jobs:
       run: |
         echo -e "$(nproc) thread build."
         #make -j$(nproc) V=s
-        #make -j$(nproc) || make -j1 || make -j1 V=s
-        #make -j$(nproc) || make -j1 V=s
-        make -j1 || make -j1 V=s
+        make -j$(nproc) || make -j1 || make -j1 V=s
 
     # 成功编译后，再同步代码
     - name: Sync code from upstream
@@ -167,6 +165,7 @@ jobs:
         # 定义一些变量
         #LAST_COMMIT=$(git show -s --date=short --format="Author: %an<br/>date: %cd<br/>commit: %s<br/>commit hash: %H")
         #echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_ENV
+        # 生成 release.txt
         chmod +x ../gen_release_msg.sh && ../gen_release_msg.sh
         echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S %Z')" >> $GITHUB_ENV
         echo "TAG_NAME=HiWiFi_${{ matrix.model }}-$(date -u '+%Y%m%d')" >> $GITHUB_ENV
@@ -197,14 +196,6 @@ jobs:
         commit: master
         token: ${{ secrets.GITHUB_TOKEN }}
         bodyFile: openwrt/release.txt
-        #body: |
-        #  Autobuild | 自动编译
-        #  1. 本固件为自动编译
-        #  2. 发行版中只提供完整的固件
-        #  默认IP： 192.168.10.1 默认密码： password
-        #  当前使用版本:【编译前的最后一次[➦主源码](https://github.com/coolsnowwolf/lede)更新记录】
-        #  ---
-        #  ${{ env.LAST_COMMIT }}
         artifacts: openwrt/release/*
 
     - name: Delete Older Releases
