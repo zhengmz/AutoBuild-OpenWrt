@@ -114,8 +114,8 @@ jobs:
         rm -fr feeds/routing/batman-adv
         svn co https://github.com/openwrt/routing/branches/openwrt-22.03/batman-adv/ feeds/routing/batman-adv
         # need by alfred
-        rm -fr lede/feeds/packages/utils/gpsd
-        svn co https://github.com/openwrt/packages/branches/openwrt-22.03/utils/gpsd/ lede/feeds/packages/utils/gpsd
+        #rm -fr lede/feeds/packages/utils/gpsd
+        #svn co https://github.com/openwrt/packages/branches/openwrt-22.03/utils/gpsd/ lede/feeds/packages/utils/gpsd
         rm -fr feeds/luci/themes/luci-theme-argon
         git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
         git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git package/luci-app-argon-config
@@ -150,7 +150,8 @@ jobs:
         echo -e "$(nproc) thread build."
         #make -j$(nproc) V=s
         #make -j$(nproc) || make -j1 || make -j1 V=s
-        make -j$(nproc) || make -j1 V=s
+        #make -j$(nproc) || make -j1 V=s
+        make -j1 || make -j1 V=s
 
     # 成功编译后，再同步代码
     - name: Sync code from upstream
