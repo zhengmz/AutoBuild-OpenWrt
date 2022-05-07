@@ -111,8 +111,8 @@ jobs:
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
-        rm -fr feeds/routing/batman-adv
-        svn co https://github.com/openwrt/routing/branches/openwrt-22.03/batman-adv/ feeds/routing/batman-adv
+        #rm -fr feeds/routing/batman-adv
+        #svn co https://github.com/openwrt/routing/branches/openwrt-22.03/batman-adv/ feeds/routing/batman-adv
         rm -fr feeds/luci/themes/luci-theme-argon
         git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
         git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git package/luci-app-argon-config
