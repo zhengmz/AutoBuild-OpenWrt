@@ -98,14 +98,14 @@ jobs:
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
 
-        df -h
-
     - name: Clone source code
       env: 
         REPO_URL: https://github.com/coolsnowwolf/lede
         REPO_BRANCH: master
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+
+        df -h
 
     # 使用github cache，参见 <https://github.com/coolsnowwolf/lede/pull/7796>
     - name: Use cache
@@ -147,15 +147,22 @@ jobs:
         ./scripts/feeds install -a
 
     - name: Configuration Customization
+      working-directory: ./openwrt
       env:
         CONFIG_FILE: 'HiWiFi_${{ matrix.model }}.config'
+        DIY: 'customize.sh'
       run: |
-        [ -e $CONFIG_FILE ] && cp -a $CONFIG_FILE openwrt/.config
-        #echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> openwrt/.config
+        [ -e ../$CONFIG_FILE ] && cp -a ../$CONFIG_FILE .config
+        #echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config
         # 编译为 SDK
-        [ "x$BUILD_SDK" = "xtrue" ] && echo "CONFIG_SDK=y" >> openwrt/.config
-        chmod +x ./customize.sh && ./customize.sh
-        cd openwrt && make defconfig
+        [ "x$BUILD_SDK" = "xtrue" ] && echo "CONFIG_SDK=y" >> .config
+        [ -e ../$DIY ] && chmod +x ../$DIY && ../$DIY
+
+        # check
+        diff ../$CONFIG_FILE .config
+        git diff
+
+        make defconfig
 
     - name: Download package
       working-directory: ./openwrt
