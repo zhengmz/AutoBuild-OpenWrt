@@ -217,7 +217,7 @@ jobs:
         BUILD_DATE="$(date '+%Y%m%d')"
         TAG_NAME="${DEVICE_NAME}"; [ "x$BUILD_SDK" = "xtrue" ] && TAG_NAME="${TAG_NAME}-SDK"
         echo "TAG_NAME=${TAG_NAME}-${BUILD_DATE}" >> $GITHUB_ENV
-        echo "PKG_NAME=${DEVICE_NAME}-packages-${BUILD_DATE}.zip" >> $GITHUB_ENV
+        echo "PKG_NAME=${DEVICE_NAME}-packages-${BUILD_DATE}" >> $GITHUB_ENV
 
         # check
         echo "cat GITHUB_ENV ..."
@@ -235,11 +235,11 @@ jobs:
       if: env.CREATE_RELEASE == 'true'
       run: |
         mkdir -p release
-        #set +e
+        set +e
         #cp -a `find bin/targets -type f -name "*.bin"` release
         #tar czf release/${TAG_NAME}.tar.gz bin/
-        mv bin/targets/**/*.bin release
-        [ "x$BUILD_SDK" = "xtrue" ] && mv bin/targets/**/*sdk*.xz release
+        mv `find bin/targets -type f -name "*.bin"` release
+        [ "x$BUILD_SDK" = "xtrue" ] && mv `find bin/targets -type f -name "*sdk*.xz"` release
         (cd bin && 7z a ../release/${PKG_NAME}.7z * && 7z a -tzip ../release/${PKG_NAME}.zip *)
 
         # Generate message file release.txt
