@@ -238,21 +238,21 @@ jobs:
         set +e
         #cp -a `find bin/targets -type f -name "*.bin"` release
         #tar czf release/${TAG_NAME}.tar.gz bin/
-        mv `find bin/targets -type f -name "*.bin"` release
-        [ "x$BUILD_SDK" = "xtrue" ] && mv `find bin/targets -type f -name "*sdk*.xz"` release
+        mv -v `find bin/targets -type f -name "*.bin"` release
+        [ "x$BUILD_SDK" = "xtrue" ] && mv -v `find bin/targets -type f -name "*sdk*.xz"` release
         (cd bin && 7z a ../release/${PKG_NAME}.7z * && 7z a -tzip ../release/${PKG_NAME}.zip *)
 
         # Generate message file release.txt
         chmod +x ../gen_release_msg.sh && ../gen_release_msg.sh
 
         # check
-        du -sh release release.txt
+        du -sh release/* release.txt
 
     - name: Create release
       uses: ncipollo/release-action@v1
       if: env.CREATE_RELEASE == 'true'
       with:
-        name: Autobuild ${{ matrix.model }} ${{ env.BUILD_TIME }}
+        name: HiWiFi ${{ matrix.model }} ${{ env.BUILD_TIME }}
         allowUpdates: true
         tag: ${{ env.TAG_NAME }}
         commit: master

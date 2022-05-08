@@ -3,9 +3,9 @@
 srcdir=${1:-./}
 file=$PWD/release.txt
 cat >$file <<EOF
-# Autobuild | 自动编译
+## Autobuild | 自动编译
 
-## 文件说明
+### 文件说明
 
 1. 本固件为自动编译
 2. *.bin 为自动生成的固件文件
@@ -13,14 +13,14 @@ cat >$file <<EOF
 4. *.7z 和 *.zip 为已编译通过的模块包
    - 其中 targets/**/sha256sums 文件有固件和 SDK 文件的校验值
 
-## 默认参数
+### 默认参数
 
 - 默认IP： 192.168.10.1
 - 默认密码： password
 
 ---
 
-## 使用到的仓库及其版本
+### 使用到的仓库及其版本
 
 EOF
 for d in `find $srcdir -type d -name ".git"`

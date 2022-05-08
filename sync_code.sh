@@ -5,12 +5,16 @@
 #set -e
 
 ACCESS_TOKEN=$1
+ACTOR=$2
+[[ -z "$ACTOR" ]] && ACTOR=${GITHUB_ACTOR}
 
-if [ -z "$ACCESS_TOKEN" ]; then
-	echo "ACCESS_TOKEN is null"
+if [ -z "$ACCESS_TOKEN" -o -z "$ACTOR" ]; then
+	echo "ACCESS_TOKEN or ACTOR is null"
+	echo "Usage: $0 ACCESS_TOKEN [ACTOR]"
 	exit 1
 fi
 echo "ACCESS_TOKEN: $ACCESS_TOKEN"
+echo "ACTOR: $ACTOR"
 
 # 定义需要同步的仓库
 # 名字一样，可以只写上游仓库即可
@@ -35,8 +39,8 @@ sync() {
 	upstream="$1"
 	name="$2"
 	[[ -z "$name" ]] && name=`echo "${1##*/}" | sed 's/\.git//'`
-	#target="https://${GITHUB_ACTOR}:${ACCESS_TOKEN}@github.com/zhengmz/${name}.git"
-	target="https://${GITHUB_ACTOR}:${ACCESS_TOKEN}@github.com/${GITHUB_ACTOR}/${name}.git"
+	#target="https://${GITHUB_ACTOR}:${ACCESS_TOKEN}@github.com/${GITHUB_ACTOR}/${name}.git"
+	target="https://${ACTOR}:${ACCESS_TOKEN}@github.com/${ACTOR}/${name}.git"
 	echo "upstream: [${upstream}] to target: [${target}]"
 	#OPTS="--dry-run"
 	#rm -fr $name
