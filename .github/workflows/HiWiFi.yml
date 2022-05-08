@@ -207,13 +207,15 @@ jobs:
     - name: Add environment variables
       env:
         TZ: 'Asia/Shanghai'
+        DEVICE_NAME: 'HiWiFi_${{ matrix.model }}'
       run: |
         #echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S %Z')" >> $GITHUB_ENV
         #echo "TAG_NAME=HiWiFi_${{ matrix.model }}-$(date -u '+%Y%m%d')" >> $GITHUB_ENV
         echo "BUILD_TIME=$(date '+%F %T %Z')" >> $GITHUB_ENV
-        TAG_NAME="HiWiFi_${{ matrix.model }}-$(date '+%Y%m%d')"
-        [ "x$BUILD_SDK" = "xtrue" ] && TAG_NAME="${TAG_NAME}-SDK"
-        echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+        BUILD_DATE="$(date '+%Y%m%d')"
+        TAG_NAME="${DEVICE_NAME}"; [ "x$BUILD_SDK" = "xtrue" ] && TAG_NAME="${TAG_NAME}-SDK"
+        echo "TAG_NAME=${TAG_NAME}-${BUILD_DATE}" >> $GITHUB_ENV
+        echo "PKG_NAME=${DEVICE_NAME}-packages-${BUILD_DATE}.zip" >> $GITHUB_ENV
 
         # check
         echo "cat GITHUB_ENV ..."
@@ -226,16 +228,17 @@ jobs:
         name: ${{ env.TAG_NAME }}
         path: openwrt/bin
 
-    - name: Generate release files
+    - name: Prepare release files
       working-directory: ./openwrt
       if: env.CREATE_RELEASE == 'true'
       run: |
         mkdir -p release
-        set +e
-        # Maybe not found bin file, if buildng SDK
-        cp -a `find bin/targets -type f -name "*.bin"` release
-
-        tar czf release/${TAG_NAME}.tar.gz bin/
+        #set +e
+        #cp -a `find bin/targets -type f -name "*.bin"` release
+        #tar czf release/${TAG_NAME}.tar.gz bin/
+        mv bin/targets/**/*.bin release
+        [ "x$BUILD_SDK" = "xtrue" ] && mv bin/targets/**/*sdk*.xz release
+        (cd bin && 7z a ../release/${PKG_NAME}.7z * && 7z a -tzip ../release/${PKG_NAME}.zip *)
 
         # Generate message file release.txt
         chmod +x ../gen_release_msg.sh && ../gen_release_msg.sh
