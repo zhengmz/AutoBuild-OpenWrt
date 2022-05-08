@@ -7,7 +7,7 @@
 首先感谢：
 
 - 感谢L大的源码 [Lean's OpenWrt](https://github.com/coolsnowwolf/lede)
-- 感谢 P3TERX: <https://github.com/P3TERX/Actions-OpenWrt/>
+- 感谢 P3TERX: <https://github.com/P3TERX/Actions-OpenWrt>
   - 也感谢他提供 Docker 镜像 <https://github.com/P3TERX/openwrt-build-env>，可以方便在本地编译
 - 感谢 eSir: <https://github.com/esirplayground/AutoBuild-OpenWrt>
 

@@ -27,10 +27,13 @@ on:
   repository_dispatch:
 
 env:
+  #BUILD_SDK: false
   USE_CACHE: true
   UPLOAD_ARTIFACT: true
   SYNC_CODE: true
   CREATE_RELEASE: true
+  DELETE_OLD_RELEASE: true
+  DELETE_OLD_RUN: true
 
 jobs:
   #sync-code:
@@ -40,7 +43,7 @@ jobs:
   #  - name: Sync lede
   #    uses: TobKed/github-forks-sync-action@master
   #    with:
-  #      github_token: ${{ secrets.GITHUB_TOKEN }}
+  #      github_token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
   #      upstream_repository: coolsnowwolf/lede
   #      target_repository: zhengmz/lede
   #      upstream_branch: master
@@ -76,14 +79,26 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo apt update -qqy
-        sudo apt full-upgrade -qqy
-        sudo apt install -qqy ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+        set +e
+        docker rmi `docker images -q`
+        echo "Deleting unuse package, please wait ..."
+        sudo -E apt-get -qqy purge \
+          azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell \
+          openjdk* mysql* php* mongodb* dotnet* moby* snapd*
+        echo "Install required package, please wait ..."
+        sudo -E apt-get update -qqy
+        sudo -E apt-get upgrade -qqy
+        sudo -E apt-get install -qqy \
+          ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
           bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib \
           git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
           libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz \
           mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip qemu-utils \
           rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        sudo -E apt-get -y autoremove --purge
+        sudo -E apt-get clean
+
+        df -h
 
     - name: Clone source code
       env: 
@@ -102,13 +117,16 @@ jobs:
 
     - name: Import external feeds
       working-directory: ./openwrt
+      env: 
+        EXTRA_DIR: package/extra
       run: |
-        #rm -rf package/helloworld
-        git clone --depth=1 https://github.com/fw876/helloworld.git package/helloworld
-        git clone --depth=1 https://github.com/zhengmz/luci-app-eqos.git package/luci-app-eqos
-        git clone --depth=1 https://github.com/destan19/OpenAppFilter.git package/OpenAppFilter
-        git clone --depth=1 https://github.com/kiddin9/luci-app-dnsfilter.git package/luci-app-dnsfilter
-        #git clone --depth=1 https://github.com/shadowsocks/luci-app-shadowsocks.git package/luci-app-shadowsocks
+        mkdir -p $EXTRA_DIR
+        git clone --depth=1 https://github.com/fw876/helloworld.git $EXTRA_DIR/helloworld
+        git clone --depth=1 https://github.com/zhengmz/luci-app-eqos.git $EXTRA_DIR/luci-app-eqos
+        git clone --depth=1 https://github.com/destan19/OpenAppFilter.git $EXTRA_DIR/OpenAppFilter
+        git clone --depth=1 https://github.com/kiddin9/luci-app-dnsfilter.git $EXTRA_DIR/luci-app-dnsfilter
+        git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git $EXTRA_DIR/luci-app-argon-config
+        #git clone --depth=1 https://github.com/shadowsocks/luci-app-shadowsocks.git $EXTRA_DIR/luci-app-shadowsocks
         #sed -i '/routing/d' ./feeds.conf.default
         #echo "src-git routing https://git.openwrt.org/feed/routing.git;openwrt-21.02" >> ./feeds.conf.default
 
@@ -120,12 +138,12 @@ jobs:
         #svn co https://github.com/openwrt/routing/branches/openwrt-22.03/batman-adv/ feeds/routing/batman-adv
         rm -fr feeds/luci/themes/luci-theme-argon
         git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
-        git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git package/luci-app-argon-config
  
     - name: Install feeds
       working-directory: ./openwrt
       run: |
         ./scripts/feeds install -a
+        # First install has more warning
         ./scripts/feeds install -a
 
     - name: Configuration Customization
@@ -135,7 +153,7 @@ jobs:
         [ -e $CONFIG_FILE ] && cp -a $CONFIG_FILE openwrt/.config
         #echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> openwrt/.config
         # 编译为 SDK
-        #echo "CONFIG_SDK=y" >> openwrt/.config
+        #[ "x$BUILD_SDK" = "xtrue" ] && echo "CONFIG_SDK=y" >> openwrt/.config
         chmod +x ./customize.sh && ./customize.sh
         cd openwrt && make defconfig
 
@@ -180,7 +198,7 @@ jobs:
         name: ${{ env.TAG_NAME }}
         path: openwrt/bin
 
-    - name: Copy Release files
+    - name: Generate release files
       working-directory: ./openwrt
       if: env.CREATE_RELEASE == 'true'
       run: |
@@ -204,14 +222,24 @@ jobs:
         tag: ${{ env.TAG_NAME }}
         commit: master
         token: ${{ secrets.GITHUB_TOKEN }}
-        bodyFile: "openwrt/release.txt"
-        artifacts: "openwrt/release/*"
+        bodyFile: openwrt/release.txt
+        artifacts: openwrt/release/*
 
-    - name: Delete Older Releases
+    - name: Delete older releases
       uses: dev-drprasad/delete-older-releases@v0.2.0
+      if: env.DELETE_OLD_RELEASE == 'true'
       with:
-        keep_latest: 5
+        keep_latest: 6
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Delete older workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
+      if: env.DELETE_OLD_RUN == 'true'
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        retain_days: 30
+        keep_minimum_runs: 6
 
