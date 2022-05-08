@@ -168,8 +168,10 @@ jobs:
         [ -e ../$DIY_SH ] && chmod +x ../$DIY_SH && ../$DIY_SH
 
         # check
+        set +e
         diff ../$CONFIG_FILE .config
         git diff
+        set -e
 
         make defconfig
 
