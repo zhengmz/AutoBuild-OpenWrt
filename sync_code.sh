@@ -35,8 +35,8 @@ sync() {
 	upstream="$1"
 	name="$2"
 	[[ -z "$name" ]] && name=`echo "${1##*/}" | sed 's/\.git//'`
-	#target="git@github.com:zhengmz/${name}.git"
-	target="https://${GITHUB_ACTOR}:${ACCESS_TOKEN}@github.com/zhengmz/${name}.git"
+	#target="https://${GITHUB_ACTOR}:${ACCESS_TOKEN}@github.com/zhengmz/${name}.git"
+	target="https://${GITHUB_ACTOR}:${ACCESS_TOKEN}@github.com/${GITHUB_ACTOR}/${name}.git"
 	echo "upstream: [${upstream}] to target: [${target}]"
 	#OPTS="--dry-run"
 	#rm -fr $name
