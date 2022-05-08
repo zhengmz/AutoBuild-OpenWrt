@@ -27,7 +27,7 @@ on:
   repository_dispatch:
 
 env:
-  #BUILD_SDK: false
+  BUILD_SDK: true
   USE_CACHE: true
   UPLOAD_ARTIFACT: true
   SYNC_CODE: true
@@ -153,7 +153,7 @@ jobs:
         [ -e $CONFIG_FILE ] && cp -a $CONFIG_FILE openwrt/.config
         #echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> openwrt/.config
         # 编译为 SDK
-        #[ "x$BUILD_SDK" = "xtrue" ] && echo "CONFIG_SDK=y" >> openwrt/.config
+        [ "x$BUILD_SDK" = "xtrue" ] && echo "CONFIG_SDK=y" >> openwrt/.config
         chmod +x ./customize.sh && ./customize.sh
         cd openwrt && make defconfig
 
@@ -181,6 +181,8 @@ jobs:
 
     - name: Copy external files
       working-directory: ./openwrt
+      env:
+        TZ: 'Asia/Shanghai'
       run: |
         #cp .config .config.old bin
         cp .config bin/config
@@ -188,8 +190,10 @@ jobs:
         # 定义一些变量
         #LAST_COMMIT=$(git show -s --date=short --format="Author: %an<br/>date: %cd<br/>commit: %s<br/>commit hash: %H")
         #echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_ENV
-        echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S %Z')" >> $GITHUB_ENV
-        echo "TAG_NAME=HiWiFi_${{ matrix.model }}-$(date -u '+%Y%m%d')" >> $GITHUB_ENV
+        #echo "BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S %Z')" >> $GITHUB_ENV
+        #echo "TAG_NAME=HiWiFi_${{ matrix.model }}-$(date -u '+%Y%m%d')" >> $GITHUB_ENV
+        echo "BUILD_TIME=$(date '+%F %T %Z')" >> $GITHUB_ENV
+        echo "TAG_NAME=HiWiFi_${{ matrix.model }}-$(date '+%Y%m%d')" >> $GITHUB_ENV
 
     - name : Upload artifact
       uses: actions/upload-artifact@master

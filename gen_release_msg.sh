@@ -19,7 +19,7 @@ do
 	(
 	cd $d/..
 	name=$(basename $PWD); [[ "$name" == "lede" ]] && name="openwrt/lede"
-        ver_date=$(git show -s --date=short --format="commit: %H, date: %cI")
+        ver_date=$(git show -s --date=short --format="commit: %H, date: %ci")
 	echo "- $name: $ver_date" >> $file
 	)
 done
