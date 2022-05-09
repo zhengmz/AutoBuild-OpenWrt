@@ -27,9 +27,9 @@ on:
   repository_dispatch:
 
 env:
-  BUILD_SDK: true
+  BUILD_SDK: false
   USE_CACHE: true
-  UPLOAD_ARTIFACT: false
+  UPLOAD_ARTIFACT: true
   SYNC_CODE: true
   CREATE_RELEASE: true
   DELETE_OLD_RELEASE: true
@@ -238,8 +238,8 @@ jobs:
         set +e
         #cp -a `find bin/targets -type f -name "*.bin"` release
         #tar czf release/${TAG_NAME}.tar.gz bin/
-        mv -v `find bin/targets -type f -name "*.bin"` release
-        [ "x$BUILD_SDK" = "xtrue" ] && mv -v `find bin/targets -type f -name "*sdk*.xz"` release
+        mv -v `find bin/targets -type f -name "openwrt-*.bin"` release
+        [ "x$BUILD_SDK" = "xtrue" ] && mv -v `find bin/targets -type f -name "openwrt-sdk*.xz"` release
         (cd bin && 7z a ../release/${PKG_NAME}.7z * && 7z a -tzip ../release/${PKG_NAME}.zip *)
 
         # Generate message file release.txt

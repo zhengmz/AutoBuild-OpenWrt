@@ -8,8 +8,8 @@ cat >$file <<EOF
 ### 文件说明
 
 1. 本固件为自动编译
-1. \`*.bin\` 为自动生成的固件文件
-1. \`*.7z\` 和 \`*.zip\` 为已编译通过的模块包
+1. \`openwrt-*.bin\` 为自动生成的固件文件
+1. \`*-packages-*.7z\` 和 \`*-packages-*.zip\` 为已编译通过的模块包
    - 其中 \`targets/**/sha256sums\` 文件有固件和 SDK 文件的校验值
 
 ### 默认参数
@@ -23,7 +23,7 @@ cat >$file <<EOF
 
 EOF
 
-[ "x$BUILD_SDK" = "xtrue" ] && sed -i '7i\1. \`*sdk*.xz\` 为自动生成的 SDK 文件' $file
+[ "x$BUILD_SDK" = "xtrue" ] && sed -i '7i\1. \`openwrt-sdk-*.xz\` 为自动生成的 SDK 文件' $file
 
 for d in `find $srcdir -type d -name ".git"`
 do
