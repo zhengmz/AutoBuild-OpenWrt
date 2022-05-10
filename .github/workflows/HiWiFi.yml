@@ -15,10 +15,10 @@ on:
   #    - master
 
   schedule:
-    - cron: 10 16 1 * *
+  #  - cron: 10 16 1 * *
   # every month second day 0:10 CST
-  #  - cron: 10 16 * * sun
-  # every sunday 0:10 CST
+    - cron: 10 16 * * 0
+  # every Sunday 16:10 UTC, as Monday 0:10 CST
   #  - cron: 10 16 1 1,4,7,10 *
   # every quarter second day 0:10 CST
   

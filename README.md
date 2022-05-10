@@ -26,7 +26,10 @@
 
 ## 附录一 应用列表
 
-请参见 <https://www.right.com.cn/forum/thread-344825-1-1.html> （更新至 2021-11-18）
+请参见
+
+- <https://www.right.com.cn/forum/thread-344825-1-1.html> （更新至 2021-11-18）
+- <https://www.right.com.cn/forum/thread-3682029-1-1.html> （同上面）
 
 ```conf
 #选择LuCI 配置 添加插件应用：常用
