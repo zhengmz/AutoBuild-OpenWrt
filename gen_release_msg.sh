@@ -9,7 +9,7 @@ cat >$file <<EOF
 
 1. 本固件为自动编译
 1. \`openwrt-*.bin\` 为自动生成的固件文件
-1. \`*-packages-*.7z\` 和 \`*-packages-*.zip\` 为已编译通过的模块包
+1. \`*-packages-*.zip\` 为已编译通过的模块包
    - 其中 \`targets/**/sha256sums\` 文件有固件和 SDK 文件的校验值
 
 ### 默认参数
