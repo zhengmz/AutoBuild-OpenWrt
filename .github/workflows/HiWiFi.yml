@@ -17,6 +17,8 @@ on:
   schedule:
   #  - cron: 10 16 1 * *
   # every month second day 0:10 CST
+    - cron: 10 16 * * *
+  # every day
     - cron: 10 16 * * 0
   # every Sunday 16:10 UTC, as Monday 0:10 CST
   #  - cron: 10 16 1 1,4,7,10 *
@@ -24,16 +26,58 @@ on:
   
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-  repository_dispatch:
+    inputs:
+      build_sdk:
+        description: 'Build sdk'
+        type: boolean
+        required: true
+        default: 'false'
+      use_cache:
+        description: 'Use cache'
+        type: boolean
+        required: true
+        default: 'true'
+      upload_artifact:
+        description: 'Upload artifact'
+        type: boolean
+        required: true
+        default: 'true'
+      sync_code:
+        description: 'Sync code'
+        type: boolean
+        required: true
+        default: 'true'
+      create_release:
+        description: 'Create release'
+        type: boolean
+        required: true
+        default: 'true'
+      delete_release:
+        description: 'Delete older release'
+        type: boolean
+        required: true
+        default: 'true'
+      delete_run:
+        description: 'Delete older workflow run'
+        type: boolean
+        required: true
+        default: 'true'
 
 env:
-  BUILD_SDK: false
-  USE_CACHE: true
-  UPLOAD_ARTIFACT: true
-  SYNC_CODE: true
-  CREATE_RELEASE: true
-  DELETE_OLD_RELEASE: true
-  DELETE_OLD_RUN: true
+  #BUILD_SDK: false
+  #USE_CACHE: true
+  #UPLOAD_ARTIFACT: true
+  #SYNC_CODE: true
+  #CREATE_RELEASE: true
+  #DELETE_OLD_RELEASE: true
+  #DELETE_OLD_RUN: true
+  BUILD_SDK: ${{ github.event.inputs.build_sdk }}
+  USE_CACHE: ${{ github.event.inputs.use_cache }}
+  UPLOAD_ARTIFACT: ${{ github.event.inputs.upload_artifact }}
+  SYNC_CODE: ${{ github.event.inputs.sync_code }}
+  CREATE_RELEASE: ${{ github.event.inputs.create_release }}
+  DELETE_OLD_RELEASE: ${{ github.event.inputs.delete_release }}
+  DELETE_OLD_RUN: ${{ github.event.inputs.delete_run }}
 
 jobs:
   #sync-code:
@@ -94,9 +138,9 @@ jobs:
         echo "***************************************"
         echo "Install required package, please wait ..."
         echo "***************************************"
-        sudo -E apt-get update -qy
-        sudo -E apt-get upgrade -qy
-        sudo -E apt-get install -qy \
+        sudo -E apt-get update -qqy
+        sudo -E apt-get upgrade -qqy
+        sudo -E apt-get install -qqy \
           ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
           bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib \
           git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
@@ -106,7 +150,7 @@ jobs:
         echo "***************************************"
         echo "Autoremove and clean, please wait ..."
         echo "***************************************"
-        sudo -E apt-get -qy autoremove --purge
+        sudo -E apt-get -qqy autoremove --purge
         sudo -E apt-get clean
 
     - name: Clone source code
@@ -116,6 +160,9 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
+        echo -e "CPU: $(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
+        echo -e "UserName: $(whoami) \n"
+        echo -e "SystemInfo: \n$(lsb_release  -a 2>&1 | grep -vi 'No LSB') \n"
         df -h
 
     # Github provide 10G cache
