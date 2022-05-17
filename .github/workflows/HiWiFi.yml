@@ -71,13 +71,13 @@ env:
   #CREATE_RELEASE: true
   #DELETE_OLD_RELEASE: true
   #DELETE_OLD_RUN: true
-  BUILD_SDK: ${{ github.event.inputs.build_sdk }}
-  USE_CACHE: ${{ github.event.inputs.use_cache }}
-  UPLOAD_ARTIFACT: ${{ github.event.inputs.upload_artifact }}
-  SYNC_CODE: ${{ github.event.inputs.sync_code }}
-  CREATE_RELEASE: ${{ github.event.inputs.create_release }}
-  DELETE_OLD_RELEASE: ${{ github.event.inputs.delete_release }}
-  DELETE_OLD_RUN: ${{ github.event.inputs.delete_run }}
+  BUILD_SDK: ${{ github.event.inputs.build_sdk == '' && 'false' || github.event.inputs.build_sdk }}
+  USE_CACHE: ${{ github.event.inputs.use_cache == '' && 'true' || github.event.inputs.use_cache }}
+  UPLOAD_ARTIFACT: ${{ github.event.inputs.upload_artifact == '' && 'true' || github.event.inputs.upload_artifact }}
+  SYNC_CODE: ${{ github.event.inputs.sync_code == '' && 'true' || github.event.inputs.sync_code }}
+  CREATE_RELEASE: ${{ github.event.inputs.create_release == '' && 'true' || github.event.inputs.create_release }}
+  DELETE_OLD_RELEASE: ${{ github.event.inputs.delete_release == '' && 'true' || github.event.inputs.delete_release }}
+  DELETE_OLD_RUN: ${{ github.event.inputs.delete_run == '' && 'true' || github.event.inputs.delete_run }}
 
 jobs:
   #sync-code:
@@ -303,7 +303,7 @@ jobs:
       uses: ncipollo/release-action@v1
       if: env.CREATE_RELEASE == 'true'
       with:
-        name: HiWiFi ${{ matrix.model }} ${{ env.BUILD_TIME }}
+        name: HiWiFi ${{ matrix.model }} ${{ env.BUILD_SDK == 'true' && 'SDK' || '' }} ${{ env.BUILD_TIME }}
         allowUpdates: true
         tag: ${{ env.TAG_NAME }}
         commit: master
