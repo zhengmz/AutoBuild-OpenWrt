@@ -121,14 +121,16 @@ jobs:
 
     - name: Get system infomation
       run: |
-        echo "***************************************"
+        #set +e
         echo "CPU: $(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)"
         echo "UserName: $(whoami)"
-        echo -e "SystemInfo: \n$(lsb_release  -a 2>&1 | grep -vi 'No LSB')"
-        echo -e "Disk space: \n$(df -h)"
-        echo -e "Environment: \n$(env)"
-        echo -e "Github object json: \n${{ toJson(github) }}"
-        echo "***************************************"
+        echo -e "SystemInfo: \n$(lsb_release  -a 2>&1 | grep -vi 'No LSB')\n"
+        echo -e "Disk space: \n$(df -h)\n"
+        echo -e "Environment: \n$(env)\n"
+        echo "Github object json:"
+        cat << EOF
+          ${{ toJson(github) }}
+          EOF
 
     - name: Initialization environment
       env:
