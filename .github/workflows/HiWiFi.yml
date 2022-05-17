@@ -130,7 +130,7 @@ jobs:
         echo "Github object json:"
         cat << EOF
           ${{ toJson(github) }}
-          EOF
+        EOF
 
     - name: Initialization environment
       env:
