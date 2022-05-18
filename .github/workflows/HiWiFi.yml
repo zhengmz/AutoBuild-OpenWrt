@@ -273,6 +273,7 @@ jobs:
         #echo "TAG_NAME=HiWiFi_${{ matrix.model }}-$(date -u '+%Y%m%d')" >> $GITHUB_ENV
         echo "BUILD_TIME=$(date '+%F %T %Z')" >> $GITHUB_ENV
         BUILD_DATE="$(date '+%Y%m%d')"
+        echo "DEVICE_NAME=${DEVICE_NAME}" >> $GITHUB_ENV
         TAG_NAME="${DEVICE_NAME}"; [ "x$BUILD_SDK" = "xtrue" ] && TAG_NAME="${TAG_NAME}-SDK"
         echo "TAG_NAME=${TAG_NAME}-${BUILD_DATE}" >> $GITHUB_ENV
         echo "PKG_NAME=${DEVICE_NAME}-packages-${BUILD_DATE}" >> $GITHUB_ENV
@@ -319,22 +320,25 @@ jobs:
         bodyFile: openwrt/release.txt
         artifacts: openwrt/release/*
 
-    - name: Delete older releases
+    - name: Delete older releases of ${{ env.DEVICE_NAME }}
       #uses: dev-drprasad/delete-older-releases@v0.2.0
       uses: zhengmz/delete-older-releases@v0.2.1
       if: env.DELETE_OLD_RELEASE == 'true'
       with:
-        keep_latest: 6
+        keep_latest: 3
         delete_tags: true
+        delete_tag_pattern: ${{ env.DEVICE_NAME }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Delete older workflow runs
-      uses: Mattraks/delete-workflow-runs@v2
+      #uses: Mattraks/delete-workflow-runs@v2
+      uses: zhengmz/delete-workflow-runs@main
       if: env.DELETE_OLD_RUN == 'true'
       with:
         token: ${{ github.token }}
         repository: ${{ github.repository }}
         retain_days: 30
         keep_minimum_runs: 6
+        delete_workflow_pattern: ${{ github.workflow }}
 
