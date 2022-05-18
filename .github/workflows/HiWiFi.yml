@@ -51,12 +51,12 @@ on:
         description: 'Create release'
         type: boolean
         required: true
-        default: 'true'
+        default: 'false'
       delete_release:
         description: 'Delete older release'
         type: boolean
         required: true
-        default: 'true'
+        default: 'false'
       delete_run:
         description: 'Delete older workflow run'
         type: boolean
@@ -73,7 +73,7 @@ env:
   #DELETE_OLD_RUN: true
   BUILD_SDK: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.build_sdk || 'false' }}
   USE_CACHE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.use_cache || 'true' }}
-  UPLOAD_ARTIFACT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.upload_artifact || 'true' }}
+  UPLOAD_ARTIFACT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.upload_artifact || 'false' }}
   SYNC_CODE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sync_code || 'true' }}
   CREATE_RELEASE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.create_release || 'true' }}
   DELETE_OLD_RELEASE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.delete_release || 'true' }}
@@ -339,6 +339,6 @@ jobs:
         token: ${{ github.token }}
         repository: ${{ github.repository }}
         retain_days: 30
-        keep_minimum_runs: 6
+        keep_minimum_runs: 3
         delete_workflow_pattern: ${{ github.workflow }}
 
