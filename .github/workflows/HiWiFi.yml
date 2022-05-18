@@ -320,7 +320,7 @@ jobs:
         bodyFile: openwrt/release.txt
         artifacts: openwrt/release/*
 
-    - name: Delete older releases of ${{ env.DEVICE_NAME }}
+    - name: Delete older releases
       #uses: dev-drprasad/delete-older-releases@v0.2.0
       uses: zhengmz/delete-older-releases@v0.2.1
       if: env.DELETE_OLD_RELEASE == 'true'
