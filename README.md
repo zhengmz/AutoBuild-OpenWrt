@@ -4,6 +4,7 @@
 ![GitHub Stars](https://img.shields.io/github/stars/zhengmz/AutoBuild-OpenWrt.svg?style=flat&logo=appveyor&label=Stars&logo=github)
 ![GitHub Forks](https://img.shields.io/github/forks/zhengmz/AutoBuild-OpenWrt.svg?style=flat&logo=appveyor&label=Forks&logo=github)
 ![GitHub last commit](https://img.shields.io/github/last-commit/zhengmz/AutoBuild-OpenWrt?label=Latest%20Commit&logo=github)
+[![Build HiWiFi](https://github.com/zhengmz/AutoBuild-OpenWrt/actions/workflows/HiWiFi.yml/badge.svg)](https://github.com/zhengmz/AutoBuild-OpenWrt/actions/workflows/HiWiFi.yml)
 
 首先感谢：
 

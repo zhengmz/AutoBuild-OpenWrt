@@ -128,8 +128,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Delete older workflow runs
-      #uses: Mattraks/delete-workflow-runs@v2
-      uses: zhengmz/delete-workflow-runs@v2.0.2
+      uses: Mattraks/delete-workflow-runs@v2
+      #uses: zhengmz/delete-workflow-runs@v2.0.2
       if: env.DELETE_OLD_RUN == 'true'
       with:
         token: ${{ github.token }}

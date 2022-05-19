@@ -64,13 +64,6 @@ on:
         default: 'true'
 
 env:
-  #BUILD_SDK: false
-  #USE_CACHE: true
-  #UPLOAD_ARTIFACT: true
-  #SYNC_CODE: true
-  #CREATE_RELEASE: true
-  #DELETE_OLD_RELEASE: true
-  #DELETE_OLD_RUN: true
   BUILD_SDK: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.build_sdk || 'false' }}
   USE_CACHE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.use_cache || 'true' }}
   UPLOAD_ARTIFACT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.upload_artifact || 'false' }}
@@ -332,8 +325,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Delete older workflow runs
-      #uses: Mattraks/delete-workflow-runs@v2
-      uses: zhengmz/delete-workflow-runs@v2.0.2
+      uses: Mattraks/delete-workflow-runs@v2
+      #uses: zhengmz/delete-workflow-runs@v2.0.2
       if: env.DELETE_OLD_RUN == 'true'
       with:
         token: ${{ github.token }}
