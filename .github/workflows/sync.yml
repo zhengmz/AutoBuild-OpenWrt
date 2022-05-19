@@ -7,12 +7,12 @@
 name: Sync Code
 
 on: 
-  schedule:
+  #schedule:
   #  - cron: 10 16 1 * *
   # every month second day 0:10 CST
-    - cron: 10 16 * * *
+  #  - cron: 10 16 * * *
   # every day
-    - cron: 10 16 * * 0
+  #  - cron: 10 16 * * 0
   # every Sunday 16:10 UTC, as Monday 0:10 CST
   #  - cron: 10 16 1 1,4,7,10 *
   # every quarter second day 0:10 CST
@@ -129,7 +129,7 @@ jobs:
 
     - name: Delete older workflow runs
       #uses: Mattraks/delete-workflow-runs@v2
-      uses: zhengmz/delete-workflow-runs@main
+      uses: zhengmz/delete-workflow-runs@v2.0.2
       if: env.DELETE_OLD_RUN == 'true'
       with:
         token: ${{ github.token }}
