@@ -27,6 +27,16 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
+      ssh_debug:
+        description: 'Debug action via tmate SSH'
+        type: boolean
+        required: false
+        default: 'false'
+      ssh_timeout:
+        description: 'Timeout minutes for wait SSH connection'
+        type: number
+        required: false
+        default: '3'
       build_sdk:
         description: 'Build sdk'
         type: boolean
@@ -225,6 +235,15 @@ jobs:
         set -e
 
         make defconfig
+
+    - name: Debugging via tmate
+      uses: zhengmz/tmate2action@master
+      if: github.event.inputs.ssh_debug == 'true'
+      env:
+        DINGTALK_TOKEN: ${{ secrets.DINGTALK_TOKEN }}
+        DINGTALK_KEYWORD: ${{ secrets.DINGTALK_KEYWORD }}
+      with:
+        timeout: ${{ github.event.inputs.ssh_timeout }}
 
     - name: Download package
       working-directory: ./openwrt
