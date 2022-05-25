@@ -237,7 +237,7 @@ jobs:
         make defconfig
 
     - name: Debugging via tmate
-      uses: zhengmz/tmate2action@master
+      uses: zhengmz/actions@tmate
       if: github.event.inputs.ssh_debug == 'true'
       env:
         DINGTALK_TOKEN: ${{ secrets.DINGTALK_TOKEN }}
