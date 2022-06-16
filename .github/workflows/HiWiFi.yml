@@ -37,6 +37,11 @@ on:
         type: number
         required: false
         default: '3'
+      build_img:
+        description: 'Build image, false just for clean'
+        type: boolean
+        required: true
+        default: 'true'
       build_sdk:
         description: 'Build sdk'
         type: boolean
@@ -74,6 +79,7 @@ on:
         default: 'true'
 
 env:
+  BUILD_IMG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.build_img || 'true' }}
   BUILD_SDK: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.build_sdk || 'false' }}
   USE_CACHE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.use_cache || 'true' }}
   UPLOAD_ARTIFACT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.upload_artifact || 'false' }}
@@ -138,6 +144,7 @@ jobs:
         EOF
 
     - name: Initialization environment
+      if: env.BUILD_IMG == 'true'
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -172,6 +179,7 @@ jobs:
         sudo -E apt-get clean
 
     - name: Clone source code
+      if: env.BUILD_IMG == 'true'
       env: 
         REPO_URL: https://github.com/coolsnowwolf/lede
         REPO_BRANCH: master
@@ -183,12 +191,13 @@ jobs:
     # see <https://github.com/coolsnowwolf/lede/pull/7796>
     - name: Use cache
       uses: klever1988/cachewrtbuild@main
-      if: env.USE_CACHE == 'true'
+      if: env.USE_CACHE == 'true' && env.BUILD_IMG == 'true'
       with:
         ccache: 'true'
         prefix: ${{ github.workspace }}/openwrt
 
     - name: Import external feeds
+      if: env.BUILD_IMG == 'true'
       working-directory: ./openwrt
       env: 
         EXTRA_DIR: package/extra
@@ -204,6 +213,7 @@ jobs:
         #echo "src-git routing https://git.openwrt.org/feed/routing.git;openwrt-21.02" >> ./feeds.conf.default
 
     - name: Update & Custom feeds
+      if: env.BUILD_IMG == 'true'
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
@@ -213,6 +223,7 @@ jobs:
         git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
  
     - name: Install feeds
+      if: env.BUILD_IMG == 'true'
       working-directory: ./openwrt
       run: |
         ./scripts/feeds install -a
@@ -220,6 +231,7 @@ jobs:
         ./scripts/feeds install -a
 
     - name: Configuration Customization
+      if: env.BUILD_IMG == 'true'
       working-directory: ./openwrt
       env:
         CONFIG_FILE: 'HiWiFi_${{ matrix.model }}.config'
@@ -248,6 +260,7 @@ jobs:
         timeout: ${{ github.event.inputs.ssh_timeout }}
 
     - name: Download package
+      if: env.BUILD_IMG == 'true'
       working-directory: ./openwrt
       run: |
         make download -j$(nproc)
@@ -255,6 +268,7 @@ jobs:
         find dl -size -1024c -exec rm -f {} \;
 
     - name: Build firmware
+      if: env.BUILD_IMG == 'true'
       working-directory: ./openwrt
       run: |
         echo -e "$(nproc) thread build."
@@ -262,13 +276,14 @@ jobs:
         make -j$(nproc) || make -j1 || make -j1 V=s
 
     - name: Sync code from upstream
-      if: env.SYNC_CODE == 'true'
+      if: env.SYNC_CODE == 'true' && env.BUILD_IMG == 'true'
       run: |
         set +e
         chmod +x ./sync_code.sh
         ./sync_code.sh "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
 
     - name: Copy external files
+      if: env.BUILD_IMG == 'true'
       working-directory: ./openwrt
       run: |
         #cp .config .config.old bin
@@ -279,6 +294,7 @@ jobs:
         du -sh bin/*
 
     - name: Add environment variables
+      if: env.BUILD_IMG == 'true'
       env:
         TZ: 'Asia/Shanghai'
         DEVICE_NAME: 'HiWiFi_${{ matrix.model }}'
@@ -298,14 +314,14 @@ jobs:
 
     - name : Upload artifact
       uses: actions/upload-artifact@master
-      if: env.UPLOAD_ARTIFACT == 'true'
+      if: env.UPLOAD_ARTIFACT == 'true' && env.BUILD_IMG == 'true'
       with:
         name: ${{ env.TAG_NAME }}
         path: openwrt/bin
 
     - name: Prepare release files
       working-directory: ./openwrt
-      if: env.CREATE_RELEASE == 'true'
+      if: env.CREATE_RELEASE == 'true' && env.BUILD_IMG == 'true'
       run: |
         mkdir -p release
         set +e
@@ -324,7 +340,7 @@ jobs:
 
     - name: Create release
       uses: ncipollo/release-action@v1
-      if: env.CREATE_RELEASE == 'true'
+      if: env.CREATE_RELEASE == 'true' && env.BUILD_IMG == 'true'
       with:
         name: HiWiFi ${{ matrix.model }} ${{ env.BUILD_SDK == 'true' && 'SDK' || '' }} ${{ env.BUILD_TIME }}
         allowUpdates: true
