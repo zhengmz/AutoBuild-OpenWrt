@@ -207,7 +207,7 @@ jobs:
         git clone --depth=1 https://github.com/zhengmz/luci-app-eqos.git $EXTRA_DIR/luci-app-eqos
         git clone --depth=1 https://github.com/destan19/OpenAppFilter.git $EXTRA_DIR/OpenAppFilter
         git clone --depth=1 https://github.com/kiddin9/luci-app-dnsfilter.git $EXTRA_DIR/luci-app-dnsfilter
-        git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git $EXTRA_DIR/luci-app-argon-config
+        #git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git $EXTRA_DIR/luci-app-argon-config
         #git clone --depth=1 https://github.com/shadowsocks/luci-app-shadowsocks.git $EXTRA_DIR/luci-app-shadowsocks
         #sed -i '/routing/d' ./feeds.conf.default
         #echo "src-git routing https://git.openwrt.org/feed/routing.git;openwrt-21.02" >> ./feeds.conf.default
@@ -219,8 +219,8 @@ jobs:
         ./scripts/feeds update -a
         #rm -fr feeds/routing/batman-adv
         #svn co https://github.com/openwrt/routing/branches/openwrt-22.03/batman-adv/ feeds/routing/batman-adv
-        rm -fr feeds/luci/themes/luci-theme-argon
-        git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
+        #rm -fr feeds/luci/themes/luci-theme-argon
+        #git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
  
     - name: Install feeds
       if: env.BUILD_IMG == 'true'
